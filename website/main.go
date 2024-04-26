@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/azimjohn/jprq/server/github"
+	server_config "github.com/azimjohn/jprq/server/config"
 )
 
 var oauth github.Authenticator
@@ -25,12 +25,19 @@ var installer string
 var tokenHtml string
 
 func main() {
-	clientId := os.Getenv("GITHUB_CLIENT_ID")
-	clientSecret := os.Getenv("GITHUB_CLIENT_SECRET")
-	if clientId == "" || clientSecret == "" {
+	var (
+		conf server_config.Config
+	)
+
+	err := conf.Load()
+	if err != nil {
+		log.Fatalf("failed to load conf: %v", err)
+	}
+
+	if conf.GithubClientID == "" || conf.GithubClientSecret == "" {
 		log.Fatalf("missing github client id/secret")
 	}
-	oauth = github.New(clientId, clientSecret)
+	oauth = github.New(conf.GithubClientID, conf.GithubClientSecret, conf.OAuthCallbackUrl)
 
 	http.HandleFunc("/", contentHandler([]byte(html), "text/html"))
 	http.HandleFunc("/config.json", contentHandler([]byte(config), "application/json"))
@@ -38,8 +45,8 @@ func main() {
 	http.HandleFunc("/auth", authHandler)
 	http.HandleFunc("/oauth-callback", oauthCallback)
 
-	log.Print("Listening on 127.0.0.1:3300")
-	log.Fatal(http.ListenAndServe(":3300", nil))
+	log.Print("Listening on 0.0.0.0:443")
+	log.Fatal(http.ListenAndServeTLS(":443", conf.TLSCertFile, conf.TLSKeyFile, nil))
 }
 
 func contentHandler(content []byte, contentType string) func(w http.ResponseWriter, r *http.Request) {

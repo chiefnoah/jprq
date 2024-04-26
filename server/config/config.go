@@ -16,6 +16,7 @@ type Config struct {
 	TLSKeyFile          string
 	GithubClientID      string
 	GithubClientSecret  string
+	OAuthCallbackUrl    string
 	AllowedUsersFile    string
 }
 
@@ -30,6 +31,7 @@ func (c *Config) Load() error {
 	c.TLSCertFile = os.Getenv("JPRQ_TLS_CERT")
 	c.GithubClientID = os.Getenv("GITHUB_CLIENT_ID")
 	c.GithubClientSecret = os.Getenv("GITHUB_CLIENT_SECRET")
+	c.OAuthCallbackUrl = os.Getenv("OAUTH_CALLBACK_URL")
 	c.AllowedUsersFile = "/etc/jprq/allowed-users.csv"
 
 	if c.DomainName == "" {

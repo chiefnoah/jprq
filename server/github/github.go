@@ -31,13 +31,13 @@ type github struct {
 	redirectUri  string
 }
 
-func New(clientId, clientSecret string) Authenticator {
+func New(clientId, clientSecret, redirectUri string) Authenticator {
 	return github{
 		clientId:     clientId,
 		clientSecret: clientSecret,
 		defaultScope: "user:email",
 		userEndpoint: "https://api.github.com/user",
-		redirectUri:  "https://jprq.io/oauth-callback",
+		redirectUri:  redirectUri,
 	}
 }
 

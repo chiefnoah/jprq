@@ -1,5 +1,7 @@
 module github.com/azimjohn/jprq
 
+replace github.com/azimjohn/jprg => ./
+
 go 1.21
 
 toolchain go1.21.9
